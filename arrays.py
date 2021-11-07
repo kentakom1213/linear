@@ -1,43 +1,50 @@
 from fractions import Fraction
 from functools import reduce
 
-class Vec(list):
-    def __init__(self, list1D):
-        self.vector = list1D
-        self.dimention = len(list1D)
-    
-    def __add__(self, other):
-        return Vec([x + y for x, y in zip(self.vector, other.vector)])
+Vector = list[Fraction]
 
-    def __sub__(self, other):
-        return Vec([x - y for x, y in zip(self.vector, other.vector)])
+class Vector(list):
+    """
+    ベクトルクラス
+    """
+    list2D: list[Fraction]
+    dimention: int
 
-    def __mul__(self, scalar):
-        return Vec([x * scalar for x in self.vector])
+    def __init__(self, list1D: list[int]) -> None:
+        self.vector: list[int] = list1D
+        self.dimention: int = len(list1D)
     
-    def __truediv__(self, scalar):
+    def __add__(self, other: Vector) -> Vector:
+        return Vector([x + y for x, y in zip(self.vector, other.vector)])
+
+    def __sub__(self, other: Vector) -> Vector:
+        return Vector([x - y for x, y in zip(self.vector, other.vector)])
+
+    def __mul__(self, scalar: Fraction) -> Vector:
+        return Vector([x * scalar for x in self.vector])
+    
+    def __truediv__(self, scalar: Fraction) -> Vector:
         if scalar == 0:
             raise ZeroDivisionError()
         else:
-            return Vec([x / scalar for x in self.vector])
+            return Vector([x / scalar for x in self.vector])
     
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Fraction:
         if index >= self.dimention:
             raise IndexError("list index out of range")
         else:
             return self.vector[index]
 
-    def __repr__(self):
-        list2str = lambda a, b: f"{a}, {b}"
-        str_vec = "[" + reduce(list2str, self.vector) + "]"
+    def __repr__(self) -> str:
+        str_vec: str = "[" + reduce(lambda a, b: f"{a}, {b}", self.vector) + "]"
         return str_vec
     
-    def to_list(self):
+    def to_list(self) -> list[Fraction]:
         return self.vector
 
 
 def row_reduction(array, show=True):
-    array = [Vec([Fraction(el) for el in list]) for list in array]
+    array = [Vector([Fraction(el) for el in list]) for list in array]
     dimention = len(array)
     
     for i, _ in enumerate(array):
@@ -65,7 +72,7 @@ def find_inverse_matrix(array):
     if reducted == None:
         print("This matrix is not regular.")
         return
-    inverse = [Vec(row.to_list()[degree:]) for row in reducted]
+    inverse = [Vector(row.to_list()[degree:]) for row in reducted]
     return inverse
 
 def _make_one(row: "list", row_number: "int") -> "list":
@@ -84,7 +91,7 @@ def solve(array):
     neg_last_item = lambda x: x[:-1] + [-x[-1]]
     # array = list( map(neg_last_item, array) )
     solved = row_reduction(array, show=False)
-    return Vec([x[-1] for x in solved])
+    return Vector([x[-1] for x in solved])
 
 ### array ###
 def get_zeros(degree):
