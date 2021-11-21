@@ -1,43 +1,9 @@
 from fractions import Fraction
-from functools import reduce
+from datas import Vector, Matrix
 
-class Vec(list):
-    def __init__(self, list1D):
-        self.vector = list1D
-        self.dimention = len(list1D)
-    
-    def __add__(self, other):
-        return Vec([x + y for x, y in zip(self.vector, other.vector)])
-
-    def __sub__(self, other):
-        return Vec([x - y for x, y in zip(self.vector, other.vector)])
-
-    def __mul__(self, scalar):
-        return Vec([x * scalar for x in self.vector])
-    
-    def __truediv__(self, scalar):
-        if scalar == 0:
-            raise ZeroDivisionError()
-        else:
-            return Vec([x / scalar for x in self.vector])
-    
-    def __getitem__(self, index):
-        if index >= self.dimention:
-            raise IndexError("list index out of range")
-        else:
-            return self.vector[index]
-
-    def __repr__(self):
-        list2str = lambda a, b: f"{a}, {b}"
-        str_vec = "[" + reduce(list2str, self.vector) + "]"
-        return str_vec
-    
-    def to_list(self):
-        return self.vector
-
-
+### row_reduction ###
 def row_reduction(array, show=True):
-    array = [Vec([Fraction(el) for el in list]) for list in array]
+    array = [Vector([Fraction(el) for el in list]) for list in array]
     dimention = len(array)
     
     for i, _ in enumerate(array):
@@ -65,7 +31,7 @@ def find_inverse_matrix(array):
     if reducted == None:
         print("This matrix is not regular.")
         return
-    inverse = [Vec(row.to_list()[degree:]) for row in reducted]
+    inverse = [Vector(row.to_list()[degree:]) for row in reducted]
     return inverse
 
 def _make_one(row: "list", row_number: "int") -> "list":
@@ -84,7 +50,8 @@ def solve(array):
     neg_last_item = lambda x: x[:-1] + [-x[-1]]
     # array = list( map(neg_last_item, array) )
     solved = row_reduction(array, show=False)
-    return Vec([x[-1] for x in solved])
+    return Vector([x[-1] for x in solved])
+
 
 ### array ###
 def get_zeros(degree):
@@ -109,6 +76,11 @@ def det(arr):
         for i in range(N):
             det_arr += (-1)**i * arr[0][i] * det(cofactor(arr, 0, i))
         return det_arr
+
+
+### dot
+def dot(a, b):
+    return sum(i*j for i, j in zip(a, b))
 
 
 if __name__ == "__main__":
