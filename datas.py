@@ -1,4 +1,68 @@
+import linear
+from fractions import Fraction
 from functools import reduce
+
+### sqrt class
+class Sqrt:
+    def __init__(self, dec, factors=None):
+        if dec == 0:
+            return 0
+
+        self.factors = factors or self.factoring(dec)
+        self.rational, self.irrational = self.separate()
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            other = Sqrt(other)
+        merged_factors = self.merge_factors(self.factors, other.factors)
+        return Sqrt(None, merged_factors)
+    
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __pow__(self, num):
+        new_factors = [(n, i*num) for n, i in self.factors]
+        return Sqrt(None, new_factors)
+    
+    def __repr__(self):
+        if self.irrational == 1:
+            return f"{self.rational}"
+        elif self.rational == 1:
+            return f"Sqrt({self.irrational})"
+        else:
+            return f"{self.rational}*Sqrt({self.irrational})"
+    
+    def separate(self):
+        rational, irrational = 1, 1
+        for n, cnt in self.factors:
+            rational *= pow(n, cnt // 2)
+            irrational *= pow(n, cnt % 2)
+        return rational, irrational
+
+    @staticmethod
+    def factoring(n):
+        result = []
+        for i in range(2, int(n ** 0.5 + 1)):
+            if n % i != 0: continue
+            counter = 0
+            while n % i == 0:
+                n //= i
+                counter += 1
+            result.append((i, counter))
+        if n != 1:
+            result.append((n, 1))
+        return result
+    
+    @staticmethod
+    def merge_factors(f1, f2):
+        dic = {n:cnt for n, cnt in f1}
+        for n, cnt in f2:
+            if n in dic:
+                dic[n] += cnt
+            else:
+                dic[n] = cnt
+        return list(dic.items())
+
 
 ### vector class
 class Vector(list):
@@ -42,9 +106,10 @@ class Vector(list):
         return str_vec
 
     def __repr__(self):
-        list2str = lambda a, b: f"{a}, {b}"
-        str_vec = "Vector([" + reduce(list2str, self.vector) + "])"
-        return str_vec
+        # list2str = lambda a, b: f"{a}, {b}"
+        # str_vec = "Vector([" + reduce(list2str, self.vector) + "])"
+        # return str_vec
+        return self.__str__()
     
     def to_list(self):
         return self.vector
@@ -121,6 +186,14 @@ class Matrix():
         for i in range(self.shape[0]):
             for j in range(self.shape[1]):
                 res[j][i] = self.matrix[i][j]
+        return Matrix(res)
+    
+    def row_reduction(self):
+        res = linear.row_reduction(self.matrix)
+        return Matrix(res)
+    
+    def inverse(self):
+        res = linear.find_inverse_matrix(self.matrix)
         return Matrix(res)
     
     def cofactor(self, i, j):

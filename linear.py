@@ -1,5 +1,5 @@
 from fractions import Fraction
-from datas import Vector, Matrix
+from datas import *
 
 ### row_reduction ###
 def row_reduction(array, show=True):
@@ -22,6 +22,7 @@ def row_reduction(array, show=True):
     
     result = array #[list(map(float, vec.to_list())) for vec in array]
     return result
+
 
 def find_inverse_matrix(array):
     degree = len(array)
