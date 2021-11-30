@@ -8,7 +8,7 @@ def row_reduction(array, show=True):
     
     for i, _ in enumerate(array):
         if show:
-            print(array)
+            print(*map(str, array), sep=", ")
         if array[i][i] == 0:
             array[i], array[-1] = array[-1], array[i]
         #print(f"i = {i}") ##### debug #####

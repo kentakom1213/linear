@@ -217,7 +217,7 @@ class Matrix():
     
     def row_reduction(self):
         res = linear.row_reduction(self.matrix)
-        return Matrix(res)
+        return Matrix([row.to_list() for row in res])
     
     def inverse(self):
         res = [row.to_list() for row in linear.find_inverse_matrix(self.matrix)]
