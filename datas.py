@@ -1,6 +1,7 @@
 import linear
 from fractions import Fraction
 from functools import reduce
+import math
 
 ### sqrt class
 class Sqrt:
@@ -10,6 +11,9 @@ class Sqrt:
 
         self.factors = factors or self.factoring(dec)
         self.rational, self.irrational = self.separate()
+    
+    def __float__(self):
+        return self.rational * math.sqrt(self.irrational)
 
     def __mul__(self, other):
         if isinstance(other, int):
@@ -80,6 +84,14 @@ class Vector(list):
             else:
                 raise ValueError
         return wrapper
+    
+    def norm(self):
+        """ノルムを求める"""
+        return Sqrt(self.dot(self))
+    
+    def __abs__(self):
+        """abs()関数"""
+        return self.norm()
     
     def __add__(self, other):
         return Vector([x + y for x, y in zip(self.vector, other.vector)])
