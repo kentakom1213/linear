@@ -70,18 +70,29 @@ class Vector(list):
         self.vector = list1D
         self.dimention = len(list1D)
     
+    def is_scalar(func):
+        def wrapper(inst, val):
+            if isinstance(val, (int, float, Fraction, Sqrt)):
+                return func(inst, val)
+            else:
+                raise ValueError
+        return wrapper
+    
     def __add__(self, other):
         return Vector([x + y for x, y in zip(self.vector, other.vector)])
 
     def __sub__(self, other):
         return Vector([x - y for x, y in zip(self.vector, other.vector)])
 
+    @is_scalar
     def __mul__(self, scalar):
         return Vector([x * scalar for x in self.vector])
     
+    @is_scalar
     def __rmul__(self, scalar):
         return Vector([x * scalar for x in self.vector])
     
+    @is_scalar
     def __truediv__(self, scalar):
         if scalar == 0:
             raise ZeroDivisionError()
@@ -100,19 +111,21 @@ class Vector(list):
         else:
             raise ValueError
     
+    def copy(self):
+        return Vector(self.vector.copy())
+    
     def __str__(self):
         list2str = lambda a, b: f"{a}, {b}"
         str_vec = "[" + reduce(list2str, self.vector) + "]"
         return str_vec
 
     def __repr__(self):
-        # list2str = lambda a, b: f"{a}, {b}"
-        # str_vec = "Vector([" + reduce(list2str, self.vector) + "])"
-        # return str_vec
-        return self.__str__()
+        list2str = lambda a, b: f"{a}, {b}"
+        str_vec = "Vector([" + reduce(list2str, self.vector) + "])"
+        return str_vec
     
     def to_list(self):
-        return self.vector
+        return [int(v) for v in self.vector]
 
 
 ### matrix class
@@ -152,6 +165,7 @@ class Matrix():
     
     @filter_matrix
     def __matmul__(self, other):
+        """@ 演算子でMatrixe同士の積を求める"""
         if self.shape[1] != other.shape[0]:
             raise ValueError("The matrix shape is inappropriate.")
         else:
@@ -193,7 +207,7 @@ class Matrix():
         return Matrix(res)
     
     def inverse(self):
-        res = linear.find_inverse_matrix(self.matrix)
+        res = [row.to_list() for row in linear.find_inverse_matrix(self.matrix)]
         return Matrix(res)
     
     def cofactor(self, i, j):
