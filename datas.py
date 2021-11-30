@@ -66,8 +66,11 @@ class Sqrt:
 
 ### vector class
 class Vector(list):
-    def __init__(self, list1D):
-        self.vector = list1D
+    def __init__(self, list1D, frac=True):
+        if frac:
+            self.vector = [Fraction(v) for v in list1D]
+        else:
+            self.vector = list1D
         self.dimention = len(list1D)
     
     def is_scalar(func):
@@ -130,8 +133,11 @@ class Vector(list):
 
 ### matrix class
 class Matrix():
-    def __init__(self, arr):
-        self.matrix = arr
+    def __init__(self, arr, frac=True):
+        if frac:
+            self.matrix = [[Fraction(v) for v in row] for row in arr]
+        else:
+            self.matrix = arr
         self.shape = (len(arr), len(arr[0]))
 
         # check the shape of arr
@@ -165,7 +171,7 @@ class Matrix():
     
     @filter_matrix
     def __matmul__(self, other):
-        """@ 演算子でMatrixe同士の積を求める"""
+        """@ 演算子でMatrix同士の積を求める"""
         if self.shape[1] != other.shape[0]:
             raise ValueError("The matrix shape is inappropriate.")
         else:
@@ -193,6 +199,13 @@ class Matrix():
     
     def __rmul__(self, scalar):
         return self.__mul__(scalar)
+    
+    def __truediv__(self, scalar):
+        res = [[0] * self.shape[1] for _ in range(self.shape[0])]
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                res[i][j] = self.matrix[i][j] / scalar
+        return Matrix(res)
     
     def transpose(self):
         """転置行列を求める"""
@@ -254,7 +267,7 @@ class Matrix():
         for i, row in enumerate(self.matrix):
             if i > 0:
                 res += "        "
-            res += repr(row)
+            res += str(Vector(row))
             if i < self.shape[0]-1:
                 res += ",\n"
             else:
